@@ -1,0 +1,205 @@
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+############
+### Aliases
+############
+
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+
+alias vi='vim'
+alias ls='ls --color=auto'
+alias ll='ls -lh --color=auto'
+alias la='ls -lah --color=auto'
+alias l='ls -lh --color=auto'
+alias grep='grep --color'
+
+#h backup: make a copy and append current datetime
+backup() {
+  for file in $@ ; do
+    cp -r "$file"{,.`date +"%Y-%m-%d_%H-%M-%S"`.bak};
+  done
+}
+
+#h mcd: make a directory and cd into it
+mcd() {
+    mkdir -p "$@" && cd "$@"
+}
+
+#h ips: show my IPs
+ips() {
+  echo Hostname: `hostname`
+  for iface in $(ip addr | grep 'state UP' | cut -f2 -d" "); do
+    iface=${iface/:/}
+    echo $iface: $(ip addr show $iface | grep -o "inet [0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*")
+  done
+  local PUBIP=`dig @ns1.google.com -t txt o-o.myaddr.l.google.com +short +time=1`
+  [ "$PUBIP" != "" ] && echo Public: ${PUBIP//\"/}
+}
+
+#h curl-head: GET-Request but drop content body
+alias curl-head="curl -s -D - -o /dev/null"
+
+#h curl-resolve IP URL: GET-Request but resolve Host to given IP (vHost check)
+curl-resolve() {
+  if [ $# -lt 2 ]; then
+    echo Usage: $0 IP[:Port] URL
+    return
+  fi
+
+  local HOST=`echo $2 | sed 's%https*://\([^/:]*\).*%\1%gI'`
+  if [ $? != 0 ] || [ "$HOST" == "" ]; then
+    echo Could not parse Host from $1
+    return
+  fi
+
+  local IP=`echo $1 | cut -d ":" -f 1`
+  local PORT=`echo $1 | cut -d ":" -f 2 -s`
+  [ "$PORT" == "" ] && PORT=80
+
+  local URL=$2
+  shift; shift
+
+  curl --resolve $HOST:$PORT:$IP -s -D - $URL "$@"
+}
+
+##############
+# Bash config
+##############
+
+# ignore duplicates and lines beginning with space
+export HISTCONTROL=ignoreboth:erasedups
+export HISTSIZE=5000
+shopt -s histappend
+
+# correct misspelled folder names
+shopt -s cdspell
+
+# enable ** globbing
+shopt -s globstar
+
+# tab completion
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+
+# Rewrap lines on window resize
+shopt -s checkwinsize
+
+# some colors
+[ -z "$TERM" ] || [ "$TERM" = "dumb" ] && export TERM="xterm-256color"
+export LESS_TERMCAP_mb=$(printf '\e[01;31m') # enter blinking mode – red
+export LESS_TERMCAP_md=$(printf '\e[01;35m') # enter double-bright mode – bold, magenta
+export LESS_TERMCAP_me=$(printf '\e[0m') # turn off all appearance modes (mb, md, so, us)
+export LESS_TERMCAP_se=$(printf '\e[0m') # leave standout mode
+export LESS_TERMCAP_so=$(printf '\e[01;33m') # enter standout mode – yellow
+export LESS_TERMCAP_ue=$(printf '\e[0m') # leave underline mode
+export LESS_TERMCAP_us=$(printf '\e[04;36m') # enter underline mode – cyan
+
+# Use vim as editor
+export VISUAL="vim"
+
+
+##########################
+# Configure CommandPrompt
+##########################
+
+# If we are on a colored terminal
+if tput setaf 1 &> /dev/null; then
+  # Reset the shell from our `if` check
+  tput sgr0 &> /dev/null
+
+  # If you would like to customize your colors, use
+  # # Attribution: http://linuxtidbits.wordpress.com/2008/08/11/output-color-on-bash-scripts/
+  # for i in $(seq 0 $(tput colors)); do
+  #   echo " $(tput setaf $i)Text$(tput sgr0) $(tput bold)$(tput setaf $i)Text$(tput sgr0) $(tput sgr 0 1)$(tput setaf $i)Text$(tput sgr0)  \$(tput setaf $i)"
+  # done
+
+  # Save common color actions
+  bold="$(tput bold)"
+  reset="$(tput sgr0)"
+
+  # If the terminal supports at least 256 colors, write out our 256 color based set
+  if [[ "$(tput colors)" -ge 256 ]] &> /dev/null; then
+    user_color="$bold$(tput setaf 39)" # BOLD BLUE
+    preposition_color="$bold$(tput setaf 7)" # BOLD WHITE
+    device_color="$bold$(tput setaf 39)" # BOLD CYAN
+    dir_color="$bold$(tput setaf 76)" # BOLD GREEN
+  else
+  # Otherwise, use colors from our set of 8
+    user_color="$bold$(tput setaf 4)" # BOLD BLUE
+    preposition_color="$bold$(tput setaf 7)" # BOLD WHITE
+    device_color="$bold$(tput setaf 6)" # BOLD CYAN
+    dir_color="$bold$(tput setaf 2)" # BOLD GREEN
+  fi
+
+else
+# Otherwise, use ANSI escape sequences for coloring
+  # If you would like to customize your colors, use
+  # DEV: 30-39 lines up 0-9 from `tput`
+  # for i in $(seq 0 109); do
+  #   echo -n -e "\033[1;${i}mText$(tput sgr0) "
+  #   echo "\033[1;${i}m"
+  # done
+
+  reset="\033[m"
+  user_color="\033[1;34m" # BLUE
+  preposition_color="\033[1;37m" # WHITE
+  device_color="\033[1;36m" # CYAN
+  dir_color="\033[1;32m" # GREEN
+fi
+
+symbol_color="$reset"
+symbol_color_failed="\033[1;31m" # RED
+
+# Define the default prompt terminator character '$'
+if [[ "$UID" == 0 ]]; then
+  user_color="\033[1;31m"
+  symbol="#"
+else
+  symbol="\$"
+fi
+
+set_prompt () {
+  Last_Command=$? # Must come first!
+
+  PS1=""
+  RIGHT=""
+
+  # ssh-agent
+  if [ -n "$SSH_AUTH_SOCK" ] && [ -e "$SSH_AUTH_SOCK" ]  ; then
+    RIGHT+="[ssh-agent:on]"
+  fi
+
+  # right aligend
+  PS1+='$(printf "%*s\r" $(( COLUMNS )) "$RIGHT")'
+
+  # <user>
+  PS1+="\[$user_color\]\u\[$reset\] "
+  # at <hostname>
+  PS1+="\[$preposition_color\]at\[$reset\] \[$device_color\]\H\[$reset\] "
+  # in <directory>
+  PS1+="\[$preposition_color\]in\[$reset\] \[$dir_color\]\w\[$reset\]"
+
+  # newline
+  PS1+="\n"
+
+  # symbol with return state color
+  if [[ $Last_Command == 0 ]]; then
+    PS1+="\[$symbol_color\]"
+  else
+    PS1+="\[$symbol_color_failed\]"
+  fi
+  PS1+="$symbol \[$reset\]"
+
+  # After each command, append to the history file
+  history -a
+}
+
+export PROMPT_COMMAND='set_prompt'
+
+[ -e $HOME/.bashrc.local ] && source $HOME/.bashrc.local
+[ -e /etc/bashrc.local ] && source /etc/bashrc.local
+
