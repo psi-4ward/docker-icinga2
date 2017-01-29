@@ -18,14 +18,21 @@
 **Exposed Volume: `/icinga2`**: Contains all persistent data like config, ssh-key, cmd-pipe.  
 **Exposed Port: `5665`**: Icinga2 API Port
 
+### Supported tags
+
+* Exact: i.e. `2.6.0-r3`: Icinga2 Version 2.6.0, image build 3
+* `2.6`: Icinga2 Version 2.6.x, latest image build
+
 ### Example
 
 See [docker-compose.yml](): Icinga2 stack with UI and Graphing **(TODO)**  
 
 ```bash
+# Set container hostname to get correct API Cert DN
 sudo docker run \
   --rm -t \
   --name icinga2 \
+  --hostname icinga2 \
   --link mysql \
   -v $PWD/_data:/icinga2 \
   -p 5665:5665 \
@@ -34,7 +41,7 @@ sudo docker run \
   psitrax/icinga2
 ```
 
-```bash 
+```bash
 sudo docker exec -ti icinga2 bash
 ```
 

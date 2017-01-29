@@ -50,6 +50,6 @@ VOLUME ["/icinga2"]
 
 # Is this sufficient?
 # TODO: what if API feature is not enabled?
-HEALTHCHECK CMD netstat -an | grep 5665 | grep -iq listen
+HEALTHCHECK CMD echo 'GET /icingaweb2-ping' | openssl s_client -connect localhost:5665 &>/dev/null
 
 CMD ["/init/run.sh"]
