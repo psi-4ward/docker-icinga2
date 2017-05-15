@@ -36,5 +36,5 @@ fi
 
 # Run Icinga2 daemon
 echo 'Start Icinga2 Daemon'
-exec su icinga -c \
+exec dumb-init -- su icinga -c \
   "icinga2 daemon --log-level ${ICINGA_LOGLEVEL:-warning} --include /etc/icinga2"
