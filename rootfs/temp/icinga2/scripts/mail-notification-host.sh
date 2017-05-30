@@ -120,7 +120,8 @@ MAIL_ARGS=""
 
 [ "$SMTP_SEC" = "TLS" ] &&  MAIL_ARGS="$MAIL_ARGS -tls"
 [ "$SMTP_SEC" = "SSL" ] &&  MAIL_ARGS="$MAIL_ARGS --protocol SSMTP"
-MID=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 21 | tr -d '\n')
+MID=$($RANDOM$RANDOM$RANDOM | md5sum)
+MID=${MID:0:16}
 
 /usr/bin/printf "%b" "$BODY" \
   | swaks \
