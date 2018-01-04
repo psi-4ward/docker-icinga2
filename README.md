@@ -4,6 +4,7 @@
 [![Docker Stars](https://img.shields.io/docker/stars/psitrax/icinga2.svg)](https://hub.docker.com/r/psitrax/icinga2/)
 [![Docker Pulls](https://img.shields.io/docker/pulls/psitrax/icinga2.svg)](https://hub.docker.com/r/psitrax/icinga2/)
 [![Docker Automated buil](https://img.shields.io/docker/automated/psitrax/icinga2.svg)](https://hub.docker.com/r/psitrax/icinga2/)
+[![GitHub tag](https://img.shields.io/github/tag/psi-4ward/docker-icinga2.svg)]()
 
 * CentOS based
 * Automated Database initialization and update
@@ -22,6 +23,7 @@
 
 * Exact: i.e. `2.6.0-r3`: Icinga2 Version 2.6.0, image build 3
 * `2.6`: Icinga2 Version 2.6.x, latest image build
+* See [Tags](https://hub.docker.com/r/psitrax/icinga2/tags/) for all available versions.
 
 ### Example
 
