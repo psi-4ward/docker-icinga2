@@ -20,7 +20,7 @@
 
 ### Supported tags
 
-* Exact: i.e. `2.6.0-r3`: Icinga2 Version 2.6.0, image build 3
+* Exact: i.e. `2.8.2-r1`: Icinga2 Version 2.8.2, image build 1
 * `2.6`: Icinga2 Version 2.6.x, latest image build
 
 ### Example
