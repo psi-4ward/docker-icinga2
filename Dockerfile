@@ -2,8 +2,8 @@ FROM centos:7
 
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV REFRESHED_AT="2017-11-16" \
-    ICINGA2_VERSION="2.8.0" \
+ENV REFRESHED_AT="2018-03-22" \
+    ICINGA2_VERSION="2.8.2" \
     TIMEZONE="UTC" \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST=mysql \
