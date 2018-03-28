@@ -23,6 +23,7 @@ RUN rpm --import http://packages.icinga.org/icinga.key \
       less \
       vim \
       wget \
+      jq \
       net-tools \
       openssl \
       ca-certificates \
