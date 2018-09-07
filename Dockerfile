@@ -3,7 +3,7 @@ FROM centos:7
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
 ENV REFRESHED_AT="2018-04-27" \
-    ICINGA2_VERSION="2.8.4" \
+    ICINGA2_VERSION="2.9.1" \
     TIMEZONE="UTC" \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST=mysql \
@@ -43,7 +43,7 @@ RUN rpm --import http://packages.icinga.org/icinga.key \
     && chmod u+s /usr/bin/ping \
     && yum clean all && rm -rf /var/yum/cache \
     && localedef -f UTF-8 -i en_US en_US.UTF-8 \
-    && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 \
+    && wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 \
     && chmod +x /usr/local/bin/dumb-init
 
 ADD rootfs /
