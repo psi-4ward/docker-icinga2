@@ -21,7 +21,7 @@
 
 ### Supported tags
 
-* Exact: i.e. `2.10.3-r1`: Icinga2 Version 2.10.3, image build 1
+* Exact: i.e. `2.10.4-r1`: Icinga2 Version 2.10.4, image build 1
 * `2.6`: Icinga2 Version 2.6.x, latest image build
 * See [Tags](https://hub.docker.com/r/psitrax/icinga2/tags/) for all available versions.
 
