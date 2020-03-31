@@ -2,8 +2,8 @@ FROM centos:7
 
 MAINTAINER Christoph Wiechert <wio@psitrax.de>
 
-ENV REFRESHED_AT="2019-10-16" \
-    ICINGA2_VERSION="2.11.1" \
+ENV REFRESHED_AT="2020-03-31" \
+    ICINGA2_VERSION="2.11.3" \
     TIMEZONE="UTC" \
     MYSQL_AUTOCONF=true \
     MYSQL_HOST=mysql \
@@ -51,8 +51,6 @@ ADD rootfs /
 EXPOSE 5665
 VOLUME ["/icinga2"]
 
-# Is this sufficient?
-# TODO: what if API feature is not enabled?
-HEALTHCHECK CMD echo 'GET /icingaweb2-ping' | openssl s_client -connect localhost:5665 &>/dev/null
+# HEALTHCHECK CMD echo 'GET /icingaweb2-ping' | openssl s_client -connect localhost:5665 &>/dev/null
 
 CMD ["/init/run.sh"]
